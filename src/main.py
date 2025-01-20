@@ -18,7 +18,8 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.y = y
 
     def update(self) -> None:
-        self.rect.x -= 1
+        if not gameover:
+            self.rect.x -= 1
         screen.blit(self.image, self.rect)
         if self.rect.x <= -60:
             self.kill()
@@ -34,7 +35,7 @@ class Bird(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (144, 256)
         self.speed_y = 0
-        self.float_y = 0
+        self.float_y = self.rect.y
         self.frame_count = 0
 
     def update(self) -> None:
@@ -52,11 +53,11 @@ class Bird(pygame.sprite.Sprite):
             self.image = next(self.images)
             self.frame_count = 0
         self.frame_count += 1
+
     def die(self) -> None:
         global gameover
         gameover = True
         sound.play("hit")
-
 
 
 class Background(pygame.sprite.Sprite):
@@ -74,7 +75,8 @@ class Ground(pygame.sprite.Sprite):
         self.rect.y = 400
 
     def update(self) -> None:
-        self.rect.x -= 1
+        if not gameover:
+            self.rect.x -= 1
         if self.rect.x <= -48:
             self.rect.x = 0
         screen.blit(self.image, self.rect)
@@ -92,7 +94,7 @@ class Pipes(pygame.sprite.Group):
 
     def update(self) -> None:
         super().update()
-        if self.frame_count >= 180:
+        if self.frame_count >= 180 and not gameover:
             self.create_pipe()
             self.frame_count = 0
         self.frame_count += 1
@@ -107,6 +109,7 @@ class Sound:
     def play(self, name) -> None:
         self.content[name].play()
 
+
 class Sprites:
     def __init__(self) -> None:
         self.content = {}
@@ -115,9 +118,6 @@ class Sprites:
 
     def load(self, name) -> pygame.Surface:
         return self.content[name]
-
-
-
 
 
 BLACK = (0, 0, 0)
@@ -129,12 +129,14 @@ pygame.init()
 screen = pygame.display.set_mode((288, 512))
 pygame.display.set_caption("flappy bird")
 clock = pygame.time.Clock()
+
 sprites = Sprites()
+sound = Sound()
 bird = Bird()
 backround = Background()
 ground = Ground()
 pipes = Pipes()
-sound = Sound()
+gameover = False
 
 while True:
     for event in pygame.event.get():
@@ -142,19 +144,27 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                sound.play("wing")
-                bird.jump()
+                if gameover:
+                    bird = Bird()
+                    backround = Background()
+                    ground = Ground()
+                    pipes = Pipes()
+                    gameover = False
+                else:
+                    sound.play("wing")
+                    bird.jump()
 
     backround.update()
     pipes.update()
     ground.update()
     bird.update()
 
-    if pygame.sprite.collide_rect(bird, ground):
-        bird.die()
-    for pipe in pipes:
-        if pygame.sprite.collide_rect(bird, pipe):
+    if not gameover:
+        if pygame.sprite.collide_rect(bird, ground):
             bird.die()
+        for pipe in pipes:
+            if pygame.sprite.collide_rect(bird, pipe):
+                bird.die()
 
     pygame.display.flip()
     clock.tick(60)
