@@ -5,6 +5,25 @@ from pathlib import Path
 from itertools import cycle
 
 
+def scene_title() -> None:
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    return
+        
+        message = sprites.load("message")
+        message_rect = message.get_rect()
+        message_rect.center = (144, 256)
+        backround.update()
+        ground.update()
+        screen.blit(message, message_rect)
+
+        pygame.display.flip()
+        clock.tick(60)
+
 class ScoreLabel(pygame.sprite.Sprite):
     def __init__(self) -> None:
         self.image = font.render("0", True, WHITE)
@@ -53,7 +72,6 @@ class Pipe(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         if self.rect.x <= -60:
             self.kill()
-            del self
 
 
 class Bird(pygame.sprite.Sprite):
@@ -143,7 +161,7 @@ class Sprites:
     def __init__(self) -> None:
         self.content = {}
         for entry in IMAGE_PATH.glob("*.png"):
-            self.content[entry.stem] = pygame.image.load(entry).convert()
+            self.content[entry.stem] = pygame.image.load(entry).convert_alpha()
 
     def load(self, name: str) -> pygame.Surface:
         return self.content[name]
@@ -160,7 +178,6 @@ pygame.display.set_caption("flappy bird")
 clock = pygame.time.Clock()
 font = pygame.font.SysFont("bauhaus93", 40)
 
-score_areas = pygame.sprite.Group()
 sprites = Sprites()
 sound = Sound()
 bird = Bird()
@@ -168,8 +185,12 @@ backround = Background()
 ground = Ground()
 pipes = Pipes()
 score_label = ScoreLabel()
+score_areas = pygame.sprite.Group()
 score = 0
 gameover = False
+
+
+scene_title()
 
 while True:
     for event in pygame.event.get():
@@ -179,9 +200,8 @@ while True:
             if event.key == pygame.K_SPACE:
                 if gameover:
                     bird = Bird()
-                    backround = Background()
-                    ground = Ground()
-                    pipes = Pipes()
+                    pipes.empty()
+                    score_areas.empty()
                     gameover = False
                     score = 0
                 else:
@@ -208,7 +228,6 @@ while True:
                 score += 1
                 sound.play("point")
                 score_area.kill()
-                del score_area
 
     pygame.display.flip()
     clock.tick(60)
