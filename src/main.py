@@ -1,7 +1,24 @@
 import sys
 import pygame
+import random
 from pathlib import Path
 from itertools import cycle
+
+
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x: int, y: int, upper: bool) -> None:
+        image = pygame.image.load(PIPE_PATH)
+        if upper:
+            self.image = pygame.transform.flip(image, False, True)
+        else:
+            self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def update(self) -> None:
+        self.rect.x -= 1
+        screen.blit(self.image, self.rect)
 
 
 class Bird(pygame.sprite.Sprite):
@@ -60,22 +77,22 @@ class Ground(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
-SCREEN_WIDTH = 288
-SCREEN_HEIGHT = 512
 BLACK = (0, 0, 0)
 IMAGE_PATH = Path("assets", "sprites")
 BACKGROUND_PATH = Path("assets", "sprites", "background-day.png")
 GROUND_PATH = Path("assets", "sprites", "base.png")
+PIPE_PATH = Path("assets", "sprites", "pipe-green.png")
 GRAVITY = 0.2
-BIRD_IMAGE_UPDATE = pygame.USEREVENT
 
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((288, 512))
 pygame.display.set_caption("flappy bird")
 clock = pygame.time.Clock()
 bird = Bird()
 backround = Background()
 ground = Ground()
+upper_pipe = Pipe(288, random.randint(-300, -30), True)
+lower_pipe = Pipe(288, upper_pipe.rect.y + 430, False)
 
 while True:
     for event in pygame.event.get():
@@ -86,6 +103,8 @@ while True:
                 bird.jump()
 
     backround.update()
+    upper_pipe.update()
+    lower_pipe.update()
     ground.update()
     bird.update()
 
