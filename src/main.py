@@ -55,11 +55,6 @@ class Bird(pygame.sprite.Sprite):
             self.frame_count = 0
         self.frame_count += 1
 
-    def die(self) -> None:
-        global gameover
-        gameover = True
-        sound.play("hit")
-
 
 class Background(pygame.sprite.Sprite):
     def __init__(self) -> None:
@@ -161,10 +156,12 @@ while True:
 
     if not gameover:
         if pygame.sprite.collide_rect(bird, ground):
-            bird.die()
+            gameover = True
+            sound.play("hit")
         for pipe in pipes:
             if pygame.sprite.collide_rect(bird, pipe):
-                bird.die()
+                gameover = True
+                sound.play("hit")
 
     pygame.display.flip()
     clock.tick(60)
