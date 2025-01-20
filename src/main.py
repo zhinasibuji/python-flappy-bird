@@ -10,8 +10,15 @@ class ScoreLabel(pygame.sprite.Sprite):
         self.image = font.render("0", True, WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (144, 50)
+        self.font_shadow = font.render("0", True, BLACK)
+        self.shadow_rect = self.rect.copy()
+        self.shadow_rect.x += 2
+        self.shadow_rect.y += 2
+
 
     def update(self) -> None:
+        self.font_shadow = font.render(str(score), True, BLACK)
+        screen.blit(self.font_shadow, self.shadow_rect)
         self.image = font.render(str(score), True, WHITE)
         screen.blit(self.image, self.rect)
 
@@ -143,6 +150,7 @@ class Sprites:
 
 
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 IMAGE_PATH = Path("assets", "sprites")
 SOUND_PATH = Path("assets", "audio")
 
