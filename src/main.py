@@ -107,7 +107,7 @@ class Sound:
         for entry in SOUND_PATH.glob("*.ogg"):
             self.content[entry.stem] = pygame.mixer.Sound(entry)
 
-    def play(self, name) -> None:
+    def play(self, name: str) -> None:
         self.content[name].play()
 
 
@@ -117,7 +117,7 @@ class Sprites:
         for entry in IMAGE_PATH.glob("*.png"):
             self.content[entry.stem] = pygame.image.load(entry).convert()
 
-    def load(self, name) -> pygame.Surface:
+    def load(self, name: str) -> pygame.Surface:
         return self.content[name]
 
 
