@@ -5,6 +5,17 @@ from pathlib import Path
 from itertools import cycle
 
 
+class ScoreLabel(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        self.image = font.render("0", True, WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.center = (144, 50)
+
+    def update(self) -> None:
+        self.image = font.render(str(score), True, WHITE)
+        screen.blit(self.image, self.rect)
+
+
 class ScoreArea(pygame.sprite.Sprite):
     def __init__(self, *rect) -> None:
         super().__init__(score_areas)
@@ -131,7 +142,7 @@ class Sprites:
         return self.content[name]
 
 
-BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 IMAGE_PATH = Path("assets", "sprites")
 SOUND_PATH = Path("assets", "audio")
 
@@ -139,6 +150,7 @@ pygame.init()
 screen = pygame.display.set_mode((288, 512))
 pygame.display.set_caption("flappy bird")
 clock = pygame.time.Clock()
+font = pygame.font.SysFont("bauhaus93", 40)
 
 score_areas = pygame.sprite.Group()
 sprites = Sprites()
@@ -147,6 +159,7 @@ bird = Bird()
 backround = Background()
 ground = Ground()
 pipes = Pipes()
+score_label = ScoreLabel()
 score = 0
 gameover = False
 
@@ -171,6 +184,7 @@ while True:
     pipes.update()
     ground.update()
     bird.update()
+    score_label.update()
     score_areas.update()
 
     if not gameover:
