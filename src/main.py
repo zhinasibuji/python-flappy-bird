@@ -176,7 +176,7 @@ pygame.init()
 screen = pygame.display.set_mode((288, 512))
 pygame.display.set_caption("flappy bird")
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("bauhaus93", 40)
+font = pygame.font.SysFont("", 60, bold=True)
 
 sprites = Sprites()
 sound = Sound()
