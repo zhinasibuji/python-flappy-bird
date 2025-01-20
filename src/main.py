@@ -27,10 +27,11 @@ class Pipe(pygame.sprite.Sprite):
 
 class Bird(pygame.sprite.Sprite):
     def __init__(self) -> None:
-        ls = []
-        for entry in IMAGE_PATH.glob("bird*.png"):
-            ls.append(pygame.image.load(entry).convert())
-        self.images = cycle(ls)
+        self.images = cycle((
+            sprites.load("bird1"),
+            sprites.load("bird2"),
+            sprites.load("bird3"),
+        ))
         self.image = next(self.images)
         self.rect = self.image.get_rect()
         self.rect.center = (144, 256)
