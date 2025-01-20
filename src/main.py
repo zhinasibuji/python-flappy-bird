@@ -19,7 +19,7 @@ class Pipe(pygame.sprite.Sprite):
     def update(self) -> None:
         self.rect.x -= 1
         screen.blit(self.image, self.rect)
-        if self.rect.x <= -30:
+        if self.rect.x <= -60:
             self.kill()
 
 
@@ -30,8 +30,7 @@ class Bird(pygame.sprite.Sprite):
             ls.append(pygame.image.load(entry).convert())
         self.images = cycle(ls)
         self.image = next(self.images)
-        rotated_image = pygame.transform.rotate(self.image, -30)
-        self.rect = rotated_image.get_rect()
+        self.rect = self.image.get_rect()
         self.rect.center = (144, 256)
         self.speed_y = 0
         self.float_y = 0
@@ -42,11 +41,7 @@ class Bird(pygame.sprite.Sprite):
         self.speed_y += GRAVITY
         self.float_y += self.speed_y
         self.rect.y = int(self.float_y)
-        if self.speed_y >= 2:
-            rotated_image = pygame.transform.rotate(self.image, -30)
-        else:
-            rotated_image = pygame.transform.rotate(self.image,  30)
-        screen.blit(rotated_image, self.rect)
+        screen.blit(self.image, self.rect)
 
     def jump(self) -> None:
         self.speed_y = -5
