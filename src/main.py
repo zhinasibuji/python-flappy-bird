@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 from itertools import cycle
 
+
 class ScoreArea(pygame.sprite.Sprite):
     def __init__(self, *rect) -> None:
         super().__init__(score_areas)
@@ -14,6 +15,7 @@ class ScoreArea(pygame.sprite.Sprite):
             self.rect.x -= 1
         if self.rect.x <= -60:
             self.kill()
+
 
 class Pipe(pygame.sprite.Sprite):
     def __init__(self, x: int, y: int, upper: bool) -> None:
@@ -33,6 +35,7 @@ class Pipe(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         if self.rect.x <= -60:
             self.kill()
+            del self
 
 
 class Bird(pygame.sprite.Sprite):
@@ -97,8 +100,7 @@ class Pipes(pygame.sprite.Group):
         upper_pipe = Pipe(288, random.randint(-300, -30), True)
         lower_pipe = Pipe(288, upper_pipe.rect.bottom + 100, False)
         self.add(upper_pipe, lower_pipe)
-        y = upper_pipe.rect.bottom
-        score_area = ScoreArea(288, y, 1, 100)
+        score_area = ScoreArea(288, upper_pipe.rect.bottom, 1, 100)
         score_areas.add(score_area)
 
     def update(self) -> None:
@@ -145,6 +147,7 @@ bird = Bird()
 backround = Background()
 ground = Ground()
 pipes = Pipes()
+score = 0
 gameover = False
 
 while True:
@@ -159,6 +162,7 @@ while True:
                     ground = Ground()
                     pipes = Pipes()
                     gameover = False
+                    score = 0
                 else:
                     sound.play("wing")
                     bird.jump()
@@ -179,7 +183,10 @@ while True:
                 sound.play("hit")
         for score_area in score_areas:
             if pygame.sprite.collide_rect(bird, score_area):
-                print("score")
+                score += 1
+                sound.play("point")
+                score_area.kill()
+                del score_area
 
     pygame.display.flip()
     clock.tick(60)
