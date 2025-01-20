@@ -41,7 +41,7 @@ class Bird(pygame.sprite.Sprite):
 
     def update(self) -> None:
         self.update_image()
-        self.speed_y += GRAVITY
+        self.speed_y += 0.2
         self.float_y += self.speed_y
         self.rect.y = int(self.float_y)
         screen.blit(self.image, self.rect)
@@ -124,7 +124,6 @@ class Sprites:
 BLACK = (0, 0, 0)
 IMAGE_PATH = Path("assets", "sprites")
 SOUND_PATH = Path("assets", "audio")
-GRAVITY = 0.2
 
 pygame.init()
 screen = pygame.display.set_mode((288, 512))
