@@ -4,9 +4,9 @@ import random
 from pathlib import Path
 from itertools import cycle
 
-
 class Pipe(pygame.sprite.Sprite):
     def __init__(self, x: int, y: int, upper: bool) -> None:
+        super().__init__(pipes)
         image = pygame.image.load(PIPE_PATH)
         if upper:
             self.image = pygame.transform.flip(image, False, True)
@@ -19,6 +19,8 @@ class Pipe(pygame.sprite.Sprite):
     def update(self) -> None:
         self.rect.x -= 1
         screen.blit(self.image, self.rect)
+        if self.rect.x <= -30:
+            self.kill()
 
 
 class Bird(pygame.sprite.Sprite):
@@ -77,6 +79,25 @@ class Ground(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
 
+class Pipes(pygame.sprite.Group):
+    def __init__(self) -> None:
+        super().__init__()
+        self.frame_count = 0
+
+    def create_pipe(self) -> None:
+        upper_pipe = Pipe(288, random.randint(-300, -30), True)
+        lower_pipe = Pipe(288, upper_pipe.rect.y + 430, False)
+        self.add(upper_pipe, lower_pipe)
+
+    def update(self) -> None:
+        super().update()
+        if self.frame_count >= 180:
+            self.create_pipe()
+            self.frame_count = 0
+        self.frame_count += 1
+
+
+
 BLACK = (0, 0, 0)
 IMAGE_PATH = Path("assets", "sprites")
 BACKGROUND_PATH = Path("assets", "sprites", "background-day.png")
@@ -91,8 +112,7 @@ clock = pygame.time.Clock()
 bird = Bird()
 backround = Background()
 ground = Ground()
-upper_pipe = Pipe(288, random.randint(-300, -30), True)
-lower_pipe = Pipe(288, upper_pipe.rect.y + 430, False)
+pipes = Pipes()
 
 while True:
     for event in pygame.event.get():
@@ -103,13 +123,16 @@ while True:
                 bird.jump()
 
     backround.update()
-    upper_pipe.update()
-    lower_pipe.update()
+    pipes.update()
     ground.update()
     bird.update()
 
     if pygame.sprite.collide_rect(bird, ground):
         print("gameover")
+
+    for pipe in pipes:
+        if pygame.sprite.collide_rect(bird, pipe):
+            print("gameover")
 
     pygame.display.flip()
     clock.tick(60)
