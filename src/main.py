@@ -27,9 +27,12 @@ def scene_title() -> None:
 class ScoreLabel(pygame.sprite.Sprite):
     def __init__(self) -> None:
         self.image = font.render("0", True, WHITE)
+        self.font_shadow = font.render("0", True, BLACK)
+        self.move_to_center()
+
+    def move_to_center(self):
         self.rect = self.image.get_rect()
         self.rect.center = (144, 50)
-        self.font_shadow = font.render("0", True, BLACK)
         self.shadow_rect = self.rect.copy()
         self.shadow_rect.x += 2
         self.shadow_rect.y += 2
@@ -37,9 +40,11 @@ class ScoreLabel(pygame.sprite.Sprite):
 
     def update(self) -> None:
         self.font_shadow = font.render(str(score), True, BLACK)
-        screen.blit(self.font_shadow, self.shadow_rect)
         self.image = font.render(str(score), True, WHITE)
+        self.move_to_center()
+        screen.blit(self.font_shadow, self.shadow_rect)
         screen.blit(self.image, self.rect)
+
 
 
 class ScoreArea(pygame.sprite.Sprite):
@@ -134,9 +139,9 @@ class Pipes(pygame.sprite.Group):
 
     def create_pipe(self) -> None:
         upper_pipe = Pipe(288, random.randint(-300, -30), True)
-        lower_pipe = Pipe(288, upper_pipe.rect.bottom + 100, False)
+        lower_pipe = Pipe(288, upper_pipe.rect.bottom + 150, False)
         self.add(upper_pipe, lower_pipe)
-        score_area = ScoreArea(288, upper_pipe.rect.bottom, 1, 100)
+        score_area = ScoreArea(288, upper_pipe.rect.bottom, 1, 150)
         score_areas.add(score_area)
 
     def update(self) -> None:
