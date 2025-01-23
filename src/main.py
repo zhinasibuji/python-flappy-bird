@@ -26,11 +26,9 @@ def scene_title() -> None:
 
 class ScoreLabel(pygame.sprite.Sprite):
     def __init__(self) -> None:
-        self.image = font.render("0", True, WHITE)
-        self.font_shadow = font.render("0", True, BLACK)
-        self.move_to_center()
+        self.score = 0
 
-    def move_to_center(self):
+    def move_to_center(self) -> None:
         self.rect = self.image.get_rect()
         self.rect.center = (144, 50)
         self.shadow_rect = self.rect.copy()
@@ -39,8 +37,8 @@ class ScoreLabel(pygame.sprite.Sprite):
 
 
     def update(self) -> None:
-        self.font_shadow = font.render(str(score), True, BLACK)
-        self.image = font.render(str(score), True, WHITE)
+        self.font_shadow = font.render(str(self.score), True, BLACK)
+        self.image = font.render(str(self.score), True, WHITE)
         self.move_to_center()
         screen.blit(self.font_shadow, self.shadow_rect)
         screen.blit(self.image, self.rect)
@@ -53,7 +51,7 @@ class ScoreArea(pygame.sprite.Sprite):
         self.rect = pygame.Rect(*rect)
 
     def update(self) -> None:
-        if not gameover:
+        if not bird.dead:
             self.rect.x -= 1
         if self.rect.x <= -60:
             self.kill()
@@ -72,7 +70,7 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.y = y
 
     def update(self) -> None:
-        if not gameover:
+        if not bird.dead:
             self.rect.x -= 1
         screen.blit(self.image, self.rect)
         if self.rect.x <= -60:
@@ -92,6 +90,7 @@ class Bird(pygame.sprite.Sprite):
         self.speed_y = 0
         self.float_y = self.rect.y
         self.frame_count = 0
+        self.dead = False
 
     def update(self) -> None:
         self.update_image()
@@ -125,7 +124,7 @@ class Ground(pygame.sprite.Sprite):
         self.rect.y = 400
 
     def update(self) -> None:
-        if not gameover:
+        if not bird.dead:
             self.rect.x -= 1
         if self.rect.x <= -48:
             self.rect.x = 0
@@ -146,7 +145,7 @@ class Pipes(pygame.sprite.Group):
 
     def update(self) -> None:
         super().update()
-        if self.frame_count >= 180 and not gameover:
+        if self.frame_count >= 180 and not bird.dead:
             self.create_pipe()
             self.frame_count = 0
         self.frame_count += 1
@@ -191,8 +190,6 @@ ground = Ground()
 pipes = Pipes()
 score_label = ScoreLabel()
 score_areas = pygame.sprite.Group()
-score = 0
-gameover = False
 
 
 scene_title()
@@ -203,12 +200,11 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if gameover:
-                    bird = Bird()
+                if bird.dead:
+                    bird.__init__()
                     pipes.empty()
                     score_areas.empty()
-                    gameover = False
-                    score = 0
+                    score_label.score = 0
                 else:
                     sound.play("wing")
                     bird.jump()
@@ -220,17 +216,17 @@ while True:
     score_label.update()
     score_areas.update()
 
-    if not gameover:
+    if not bird.dead:
         if pygame.sprite.collide_rect(bird, ground):
-            gameover = True
+            bird.dead = True
             sound.play("hit")
         for pipe in pipes:
             if pygame.sprite.collide_rect(bird, pipe):
-                gameover = True
+                bird.dead = True
                 sound.play("hit")
         for score_area in score_areas:
             if pygame.sprite.collide_rect(bird, score_area):
-                score += 1
+                score_label.score += 1
                 sound.play("point")
                 score_area.kill()
 
