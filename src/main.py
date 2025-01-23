@@ -27,6 +27,9 @@ def scene_title() -> None:
 class ScoreLabel(pygame.sprite.Sprite):
     def __init__(self) -> None:
         self.score = 0
+        self.font_shadow = font.render(str(self.score), True, BLACK)
+        self.image = font.render(str(self.score), True, WHITE)
+        self.move_to_center()
 
     def move_to_center(self) -> None:
         self.rect = self.image.get_rect()
@@ -37,12 +40,15 @@ class ScoreLabel(pygame.sprite.Sprite):
 
 
     def update(self) -> None:
-        self.font_shadow = font.render(str(self.score), True, BLACK)
-        self.image = font.render(str(self.score), True, WHITE)
-        self.move_to_center()
         screen.blit(self.font_shadow, self.shadow_rect)
         screen.blit(self.image, self.rect)
 
+    def add_score(self):
+        self.score += 1
+        self.font_shadow = font.render(str(self.score), True, BLACK)
+        self.image = font.render(str(self.score), True, WHITE)
+        self.move_to_center()
+        
 
 
 class ScoreArea(pygame.sprite.Sprite):
@@ -202,9 +208,9 @@ while True:
             if event.key == pygame.K_SPACE:
                 if bird.dead:
                     bird.__init__()
+                    score_label.__init__()
                     pipes.empty()
                     score_areas.empty()
-                    score_label.score = 0
                 else:
                     sound.play("wing")
                     bird.jump()
@@ -226,7 +232,7 @@ while True:
                 sound.play("hit")
         for score_area in score_areas:
             if pygame.sprite.collide_rect(bird, score_area):
-                score_label.score += 1
+                score_label.add_score()
                 sound.play("point")
                 score_area.kill()
 
