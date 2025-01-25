@@ -1,3 +1,4 @@
+import re
 import sys
 import pygame
 import random
@@ -85,11 +86,7 @@ class Pipe(pygame.sprite.Sprite):
 
 class Bird(pygame.sprite.Sprite):
     def __init__(self) -> None:
-        self.images = cycle((
-            sprites.load("bird1"),
-            sprites.load("bird2"),
-            sprites.load("bird3"),
-        ))
+        self.images = cycle(sprites.load_anima("bird"))
         self.image = next(self.images)
         self.rect = self.image.get_rect()
         self.rect.center = (144, 256)
@@ -170,11 +167,27 @@ class Sound:
 class Sprites:
     def __init__(self) -> None:
         self.content = {}
+        self.animations = {}
         for entry in IMAGE_PATH.glob("*.png"):
-            self.content[entry.stem] = pygame.image.load(entry).convert_alpha()
+            animation_match = re.match(r"(\w+)(\d+)(.*)", entry.stem)
+            if animation_match:
+                self.add_animation(animation_match.group(1), entry)
+            else:
+                self.content[entry.stem] = pygame.image.load(entry).convert_alpha()
 
     def load(self, name: str) -> pygame.Surface:
         return self.content[name]
+    
+    def load_anima(self, name: str) -> list[pygame.Surface]:
+        return self.animations[name]
+    
+    def add_animation(self, anima_name: str, filepath: Path) -> None:
+        image = pygame.image.load(filepath).convert_alpha()
+        if anima_name in self.animations:
+            self.animations[anima_name].append(image)
+        else:
+            self.animations[anima_name] = [image]
+        
 
 
 WHITE = (255, 255, 255)
