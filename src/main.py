@@ -44,7 +44,7 @@ class ScoreLabel(pygame.sprite.Sprite):
         screen.blit(self.font_shadow, self.shadow_rect)
         screen.blit(self.image, self.rect)
 
-    def add_score(self):
+    def add_score(self) -> None:
         self.score += 1
         self.font_shadow = font.render(str(self.score), True, BLACK)
         self.image = font.render(str(self.score), True, WHITE)
