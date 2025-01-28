@@ -169,7 +169,7 @@ class Sprites:
         self.content = {}
         self.animations = {}
         for entry in IMAGE_PATH.glob("*.png"):
-            animation_match = re.match(r"(\w+)(\d+)(.*)", entry.stem)
+            animation_match = re.match(r"(\w+)(\d+)", entry.stem)
             if animation_match:
                 self.add_animation(animation_match.group(1), entry)
             else:
