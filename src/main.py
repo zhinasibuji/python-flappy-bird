@@ -54,9 +54,9 @@ class ScoreLabel(pygame.sprite.Sprite):
 
 
 class ScoreArea(pygame.sprite.Sprite):
-    def __init__(self, *rect) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int) -> None:
         super().__init__(score_areas)
-        self.rect = pygame.Rect(*rect)
+        self.rect = pygame.Rect(x, y, width, height)
 
     def update(self) -> None:
         if not bird.dead:
