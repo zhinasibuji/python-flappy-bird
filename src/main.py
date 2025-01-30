@@ -4,6 +4,7 @@ import pygame
 import random
 from pathlib import Path
 from itertools import cycle
+from collections import defaultdict
 
 
 def scene_title() -> None:
@@ -167,7 +168,7 @@ class Sound:
 class Sprites:
     def __init__(self) -> None:
         self.content = {}
-        self.animations = {}
+        self.animations = defaultdict(list)
         for entry in IMAGE_PATH.glob("*.png"):
             animation_match = re.match(r"(\w+)(\d+)", entry.stem)
             if animation_match:
@@ -183,10 +184,7 @@ class Sprites:
     
     def add_animation(self, anima_name: str, filepath: Path) -> None:
         image = pygame.image.load(filepath).convert_alpha()
-        if anima_name in self.animations:
-            self.animations[anima_name].append(image)
-        else:
-            self.animations[anima_name] = [image]
+        self.animations[anima_name].append(image)
         
 
 
