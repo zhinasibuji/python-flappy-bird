@@ -93,7 +93,7 @@ class Bird(pygame.sprite.Sprite):
         self.rect.center = (144, 256)
         self.speed_y = 0
         self.float_y = self.rect.y
-        self.frame_count = 0
+        self.frame_count = cycle(range(7))
         self.dead = False
 
     def update(self) -> None:
@@ -107,10 +107,8 @@ class Bird(pygame.sprite.Sprite):
         self.speed_y = -5
 
     def update_image(self) -> None:
-        if self.frame_count >= 6:
+        if next(self.frame_count) == 6:
             self.image = next(self.images)
-            self.frame_count = 0
-        self.frame_count += 1
 
 
 class Background(pygame.sprite.Sprite):
